@@ -36766,7 +36766,8 @@ function createServer({ env = process.env, client = new ScreepsClient({ token: e
     consoleEnabled,
     writeBranches: [...allowedBranches],
     defaultShard,
-    endpoint: "https://screeps.com"
+    endpoint: "https://screeps.com",
+    runtimeDataDirectory: env.PLUGIN_DATA || null
   }));
   tool("screeps_me", "Read the authenticated Screeps account.", {}, () => client.request("/api/auth/me"));
   tool("screeps_branches", "List code branches and active flags.", {}, () => client.request("/api/user/branches"));
