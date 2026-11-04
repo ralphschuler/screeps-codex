@@ -1,0 +1,8 @@
+{
+  "credentialSource": "macos-keychain",
+  "keychainAccount": "default",
+  "shard": "shard3",
+  "writes": false,
+  "writeBranches": [],
+  "console": false
+}

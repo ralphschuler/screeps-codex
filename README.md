@@ -6,7 +6,8 @@ No account has been connected by creating this package. No server deployment, to
 
 ## Requirements
 
-- Node.js 24 on the machine that runs the MCP process.
+- Node.js 22+ (24 recommended) on the machine that runs the MCP process. The bundled launcher supports macOS and Linux. Windows can use the direct Node configuration below.
+- Node must be on PATH or installed at the standard macOS locations `/opt/homebrew/bin/node` or `/usr/local/bin/node`. ChatGPT’s embedded runtime is not a supported dependency.
 - An MCP client supporting stdio.
 - For authenticated game access, your own Screeps token supplied through `SCREEPS_TOKEN` in the server process environment.
 
@@ -51,7 +52,7 @@ Memory and segments belong to the live shard, not to a staging code branch. Cons
 
 ## Local plugin or Git marketplace
 
-The repository root is the plugin root. `plugin.json` and `mcp.json` use the portable Agent Plugins format. The repository catalog is `.agents/plugins/marketplace.json`; its `./` source resolves from the repository root. The launcher uses the documented `${PLUGIN_ROOT}` placeholder.
+The repository root is the plugin root. `plugin.json` and `mcp.json` use the portable Agent Plugins format. The repository catalog is `.agents/plugins/marketplace.json`; its `./` source resolves from the repository root. The plugin-relative launcher `./scripts/launch.sh` resolves the installed bundle and finds a supported Node runtime. Persistent non-secret configuration uses the documented `PLUGIN_DATA` environment variable.
 
 For a local checkout containing the published bundle, run from its directory:
 
@@ -64,19 +65,33 @@ Then use the desktop app's Plugins Directory to install from **Screeps Codex** a
 
 To add the Git marketplace source, use `codex plugin marketplace add https://github.com/ralphschuler/screeps-codex.git`. The package includes its server bundle; verify installation and credential forwarding in your intended client before using it. Git marketplace distribution is **not publication in the universal public Plugins Directory**. Public submission and review are separate; local MCP submissions currently require approved-partner eligibility.
 
+## Private macOS token setup
+
+Portable `mcp.json` has no `env_vars` forwarding field. Version 0.1.1 therefore offers an **opt-in macOS Keychain adapter**, rather than putting a token in a manifest or relying on environment inheritance.
+
+1. Install Node.js from its official distribution if needed. The launcher checks PATH and the standard Homebrew/pkg locations; it does not download software or use ChatGPT internals.
+2. Privately provision a **generic password** in Keychain Access with service/item name `screeps-codex` and account `default` (or your chosen account). Enter the Screeps token only in the native secure password field. Do not paste it into chat or use a shell command containing it.
+3. Call `screeps_status` without credentials and use its `runtimeDataDirectory` value to locate the actual `PLUGIN_DATA` directory supplied by your plugin host. After approving persistent credential use, place the non-secret settings from `examples/runtime.macos.json` there as `runtime.json`. Never place the token in this file. The file must be owned by your user and not writable by other users.
+4. Restart the plugin connection. The launcher reads only the designated Keychain service/account through `/usr/bin/security`, captures the result privately, and passes it to the server in memory. If macOS requests access, review the native prompt. Do not enable access for all applications or disable Keychain protections.
+5. Check status, then verify account identity when authorized. Writes and console stay off until explicitly configured.
+
+The adapter cannot create a token or Keychain item and does not search unrelated credentials. Without explicit `credentialSource: "macos-keychain"`, it never reads Keychain. It has a 15-second timeout; if the native prompt times out, prepare the user and restart instead of repeatedly prompting. Actual Keychain integration must be verified on macOS; automated tests use synthetic values.
+
+If your host does not expose its `PLUGIN_DATA` location, use the direct Codex configuration below rather than guessing paths. For Linux/TrueNAS, keep using the host's trusted secret manager and Codex environment forwarding. There is no automatic plaintext token-file fallback.
+
 ## Direct Codex MCP configuration
 
 As an alternative to the bundled server, add this to your personal `~/.codex/config.toml`, replacing the path with your actual checkout. Do not enable duplicate copies of the server.
 
 ```toml
 [mcp_servers.screeps]
-command = "node"
+command = "/absolute/path/to/your/verified/node"
 args = ["/absolute/path/to/screeps-codex/dist/server.mjs"]
 env_vars = ["SCREEPS_TOKEN", "SCREEPS_SHARD", "SCREEPS_WRITES", "SCREEPS_WRITE_BRANCHES", "SCREEPS_CONSOLE"]
 default_tools_approval_mode = "writes"
 ```
 
-Set those variables in the environment from which Codex starts, using a trusted secret mechanism. Do not put the token in command-line arguments or shared configuration. Restart the client after configuration changes, then check `/mcp` and call the status tool. A missing token should remain a clear setup error; never compensate by pasting it into tool arguments.
+Use the actual installed Node executable path. Set those variables in the environment from which Codex starts, using a trusted secret mechanism. A GUI-launched client may not inherit your terminal environment. Do not put the token in command-line arguments or shared configuration. Restart the client after configuration changes, then check `/mcp` and call the status tool. A missing token should remain a clear setup error; never compensate by pasting it into tool arguments.
 
 ## Future TrueNAS VM setup
 
@@ -112,3 +127,6 @@ No project license has been chosen. Decide on a license before distributing this
 - [Portable MCP format and placeholders](https://agent-plugins.org/plugin-authors/mcp-servers)
 
 Packaging references checked November 4, 2026. Client capabilities can change; installation and live Screeps behavior still need verification on the intended host.
+
+
+- [Apple Keychain access controls](https://support.apple.com/en-gb/guide/mac-help/kychn002/26/mac/26)

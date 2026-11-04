@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "screeps-codex",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Inspect and manage Screeps World on screeps.com with explicit write controls.",
   "keywords": [
     "screeps",
@@ -19,7 +19,8 @@
           "Read",
           "Write"
         ]
-      }
+      },
+      "onboardingSkill": "./skills/setup/SKILL.md"
     }
   },
   "repository": "https://github.com/ralphschuler/screeps-codex"

@@ -42,7 +42,8 @@ export function createServer({ env = process.env, client = new ScreepsClient({ t
   const shardSchema = shard.default(defaultShard);
   tool('screeps_status', 'Read local configuration without revealing credentials.', {}, async () => ({
     tokenConfigured: Boolean(env.SCREEPS_TOKEN), writesEnabled: writes, consoleEnabled,
-    writeBranches: [...allowedBranches], defaultShard, endpoint: 'https://screeps.com'
+    writeBranches: [...allowedBranches], defaultShard, endpoint: 'https://screeps.com',
+    runtimeDataDirectory: env.PLUGIN_DATA || null
   }));
   tool('screeps_me', 'Read the authenticated Screeps account.', {}, () => client.request('/api/auth/me'));
   tool('screeps_branches', 'List code branches and active flags.', {}, () => client.request('/api/user/branches'));

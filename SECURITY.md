@@ -29,3 +29,7 @@ After an uncertain network response, inspect state before retrying a write. Do n
 Do not publish tokens, account data, or exploit details in a public issue. A maintainer contact has not yet been designated. Until a private reporting channel is established, keep the report local and contact the repository owner through a verified private channel. Include affected versions, redacted reproduction steps, and impact without real credentials.
 
 This project is an initial implementation. Automated tests and static review do not replace a clean installation test, live read-only smoke test, and explicit review before enabling writes.
+
+## Optional macOS Keychain adapter
+
+The launcher only reads Keychain after an explicit non-secret runtime setting selects it. It queries the fixed service `screeps-codex` and the configured account; it does not enumerate items. Credential output is captured internally and never logged or placed in command arguments. The token remains in the MCP process memory/environment, so this is not isolation from a compromised same-user process. Native Keychain access controls still apply. Do not allow all applications or weaken prompts. The user must authorize provisioning and persistent use separately.
