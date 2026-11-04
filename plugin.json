@@ -1,0 +1,26 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "screeps-codex",
+  "version": "0.1.0",
+  "description": "Inspect and manage Screeps World on screeps.com with explicit write controls.",
+  "keywords": [
+    "screeps",
+    "game",
+    "mcp"
+  ],
+  "extensions": {
+    "com.openai": {
+      "requires_local_executor": true,
+      "interface": {
+        "displayName": "Screeps",
+        "shortDescription": "Read game state and safely deploy Screeps code.",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ]
+      }
+    }
+  },
+  "repository": "https://github.com/ralphschuler/screeps-codex"
+}

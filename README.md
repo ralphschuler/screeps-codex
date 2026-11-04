@@ -10,7 +10,7 @@ No account has been connected by creating this package. No server deployment, to
 - An MCP client supporting stdio.
 - For authenticated game access, your own Screeps token supplied through `SCREEPS_TOKEN` in the server process environment.
 
-`dist/server.mjs` is the committed bundle. Running it does not require installing npm dependencies. Development uses the official MCP SDK and a locked dependency tree.
+This initial GitHub publication contains source only: `dist/server.mjs` is not yet published. Run the development build below before launching the server. The plugin is packaged but is not yet a ready-to-install Git marketplace release. Development uses the official MCP SDK and a locked dependency tree.
 
 ## Configuration and safety
 
@@ -53,7 +53,7 @@ Memory and segments belong to the live shard, not to a staging code branch. Cons
 
 The repository root is the plugin root. `plugin.json` and `mcp.json` use the portable Agent Plugins format. The repository catalog is `.agents/plugins/marketplace.json`; its `./` source resolves from the repository root. The launcher uses the documented `${PLUGIN_ROOT}` placeholder.
 
-For a local checkout, run from its directory:
+After building the bundle in a local checkout, run from its directory:
 
 ```sh
 codex plugin marketplace add .
@@ -62,7 +62,7 @@ codex plugin marketplace list
 
 Then use the desktop app's Plugins Directory to install from **Screeps Codex** and restart when required. Supply environment variables through your trusted host's server environment configuration, outside this repository. Verify status without displaying the token. Portable `mcp.json` deliberately has no secret or speculative `${SCREEPS_TOKEN}` interpolation: credential forwarding is client-managed. If your client does not pass the required environment to bundled servers, use the direct MCP configuration below instead.
 
-For Git distribution, use `codex plugin marketplace add https://github.com/ralphschuler/screeps-codex.git`. Git marketplace distribution is **not publication in the universal public Plugins Directory**. Public submission and review are separate; local MCP submissions currently require approved-partner eligibility.
+The Git marketplace source is `https://github.com/ralphschuler/screeps-codex.git`, but direct Git installation must wait until the built bundle is published. Git marketplace distribution is **not publication in the universal public Plugins Directory**. Public submission and review are separate; local MCP submissions currently require approved-partner eligibility.
 
 ## Direct Codex MCP configuration
 
@@ -100,7 +100,7 @@ npm run build
 node --test
 ```
 
-Commit the regenerated `dist/` bundle alongside source changes. CI rebuilds and checks for a bundle diff. Tests must use mocked requests and synthetic credentials; never add a real token to CI to run this suite. A passing mocked test suite does not establish live account connectivity or a successful game deployment.
+Publish the regenerated `dist/` bundle alongside source changes before advertising direct Git installation. CI builds and tests the source and makes the bundle available as a workflow artifact. Once a bundle is tracked, CI also checks it for drift. Tests must use mocked requests and synthetic credentials; never add a real token to CI to run this suite. A passing mocked test suite does not establish live account connectivity or a successful game deployment.
 
 No project license has been chosen. Decide on a license before distributing this project as open source. Bundled dependencies retain their own notices and license obligations.
 

@@ -1,0 +1,27 @@
+name: Test
+on:
+  push:
+  pull_request:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - run: npm run build
+      - run: node --test
+      - name: Check committed bundle matches source
+        run: git diff --exit-code -- dist/
+
+      - name: Upload generated MCP bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: screeps-codex-bundle
+          path: dist/server.mjs
+          if-no-files-found: error
